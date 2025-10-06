@@ -47,9 +47,7 @@ class _ShoppingListScreenState extends ConsumerState<ShoppingListScreen> {
       backgroundColor: Colors.transparent,
       builder: (context) {
         return Padding(
-          padding: EdgeInsets.only(
-            bottom: MediaQuery.of(context).viewInsets.bottom,
-          ),
+          padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
           child: Container(
             decoration: const BoxDecoration(
               gradient: LinearGradient(
@@ -57,19 +55,13 @@ class _ShoppingListScreenState extends ConsumerState<ShoppingListScreen> {
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(30),
-                topRight: Radius.circular(30),
-              ),
+              borderRadius: BorderRadius.only(topLeft: Radius.circular(30), topRight: Radius.circular(30)),
             ),
             child: Container(
               margin: const EdgeInsets.all(3),
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(28),
-                  topRight: Radius.circular(28),
-                ),
+                borderRadius: const BorderRadius.only(topLeft: Radius.circular(28), topRight: Radius.circular(28)),
               ),
               child: Padding(
                 padding: const EdgeInsets.all(24),
@@ -82,30 +74,17 @@ class _ShoppingListScreenState extends ConsumerState<ShoppingListScreen> {
                       child: Container(
                         width: 40,
                         height: 4,
-                        decoration: BoxDecoration(
-                          color: Colors.grey[300],
-                          borderRadius: BorderRadius.circular(2),
-                        ),
+                        decoration: BoxDecoration(color: Colors.grey[300], borderRadius: BorderRadius.circular(2)),
                       ),
                     ),
                     const SizedBox(height: 24),
                     // Title
                     const Text(
                       'Add Shopping Item',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF667eea),
-                      ),
+                      style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Color(0xFF667eea)),
                     ),
                     const SizedBox(height: 8),
-                    Text(
-                      'What do you need to buy?',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.grey[600],
-                      ),
-                    ),
+                    Text('What do you need to buy?', style: TextStyle(fontSize: 14, color: Colors.grey[600])),
                     const SizedBox(height: 24),
                     // Input field
                     TextField(
@@ -113,10 +92,7 @@ class _ShoppingListScreenState extends ConsumerState<ShoppingListScreen> {
                       autofocus: true,
                       decoration: InputDecoration(
                         hintText: 'e.g., Milk, Bread, Eggs...',
-                        prefixIcon: const Icon(
-                          Icons.shopping_cart_outlined,
-                          color: Color(0xFF667eea),
-                        ),
+                        prefixIcon: const Icon(Icons.shopping_cart_outlined, color: Color(0xFF667eea)),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(16),
                           borderSide: BorderSide(color: Colors.grey[300]!),
@@ -127,10 +103,7 @@ class _ShoppingListScreenState extends ConsumerState<ShoppingListScreen> {
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(16),
-                          borderSide: const BorderSide(
-                            color: Color(0xFF667eea),
-                            width: 2,
-                          ),
+                          borderSide: const BorderSide(color: Color(0xFF667eea), width: 2),
                         ),
                         filled: true,
                         fillColor: Colors.grey[50],
@@ -153,18 +126,12 @@ class _ShoppingListScreenState extends ConsumerState<ShoppingListScreen> {
                             },
                             style: OutlinedButton.styleFrom(
                               padding: const EdgeInsets.symmetric(vertical: 16),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                               side: BorderSide(color: Colors.grey[300]!),
                             ),
                             child: const Text(
                               'Cancel',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.grey,
-                              ),
+                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.grey),
                             ),
                           ),
                         ),
@@ -173,13 +140,11 @@ class _ShoppingListScreenState extends ConsumerState<ShoppingListScreen> {
                           flex: 2,
                           child: Container(
                             decoration: BoxDecoration(
-                              gradient: const LinearGradient(
-                                colors: [Color(0xFF667eea), Color(0xFF764ba2)],
-                              ),
+                              gradient: const LinearGradient(colors: [Color(0xFF667eea), Color(0xFF764ba2)]),
                               borderRadius: BorderRadius.circular(12),
                               boxShadow: [
                                 BoxShadow(
-                                  color: const Color(0xFF667eea).withOpacity(0.3),
+                                  color: const Color(0xFF667eea).withValues(alpha: 0.3),
                                   blurRadius: 8,
                                   offset: const Offset(0, 4),
                                 ),
@@ -194,22 +159,14 @@ class _ShoppingListScreenState extends ConsumerState<ShoppingListScreen> {
                                 backgroundColor: Colors.transparent,
                                 shadowColor: Colors.transparent,
                                 padding: const EdgeInsets.symmetric(vertical: 16),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                               ),
                               child: const Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Icon(Icons.add_circle_outline, size: 20),
                                   SizedBox(width: 8),
-                                  Text(
-                                    'Add Item',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
+                                  Text('Add Item', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                                 ],
                               ),
                             ),
