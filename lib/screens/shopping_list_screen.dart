@@ -2,6 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import '../providers/firebase_providers.dart';
+import '../models/shopping_item.dart';
+
+enum SortFilter {
+  dateTime,
+  alphabetical,
+  notDoneFirst,
+  doneFirst,
+}
 
 class ShoppingListScreen extends ConsumerStatefulWidget {
   const ShoppingListScreen({super.key});
@@ -12,6 +20,7 @@ class ShoppingListScreen extends ConsumerStatefulWidget {
 
 class _ShoppingListScreenState extends ConsumerState<ShoppingListScreen> {
   final _itemController = TextEditingController();
+  SortFilter _currentFilter = SortFilter.dateTime;
 
   @override
   void initState() {
@@ -78,10 +87,48 @@ class _ShoppingListScreenState extends ConsumerState<ShoppingListScreen> {
     );
   }
 
-  Future<void> _deleteItem(String itemId) async {
+  Future<bool> _confirmDelete(String itemName) async {
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Delete Item'),
+          content: Text('Are you sure you want to delete "$itemName"?'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red,
+                foregroundColor: Colors.white,
+              ),
+              child: const Text('Delete'),
+            ),
+          ],
+        );
+      },
+    );
+    return result ?? false;
+  }
+
+  Future<void> _deleteItem(String itemId, String itemName) async {
+    final confirmed = await _confirmDelete(itemName);
+    if (!confirmed) return;
+
     try {
       final firebaseService = ref.read(firebaseServiceProvider);
       await firebaseService.deleteShoppingItem(itemId);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Item deleted'),
+            duration: Duration(seconds: 2),
+          ),
+        );
+      }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -92,11 +139,13 @@ class _ShoppingListScreenState extends ConsumerState<ShoppingListScreen> {
   }
 
   Future<void> _editItem(String itemId, String currentName) async {
-    final controller = TextEditingController(text: currentName);
+    String? result;
 
-    final result = await showDialog<String>(
+    await showDialog<void>(
       context: context,
       builder: (context) {
+        final controller = TextEditingController(text: currentName);
+
         return AlertDialog(
           title: const Text('Edit Item'),
           content: TextField(
@@ -107,14 +156,24 @@ class _ShoppingListScreenState extends ConsumerState<ShoppingListScreen> {
               border: OutlineInputBorder(),
             ),
             textCapitalization: TextCapitalization.sentences,
+            onSubmitted: (value) {
+              result = value;
+              Navigator.of(context).pop();
+            },
           ),
           actions: [
             TextButton(
-              onPressed: () => Navigator.of(context).pop(),
+              onPressed: () {
+                result = null;
+                Navigator.of(context).pop();
+              },
               child: const Text('Cancel'),
             ),
             ElevatedButton(
-              onPressed: () => Navigator.of(context).pop(controller.text),
+              onPressed: () {
+                result = controller.text;
+                Navigator.of(context).pop();
+              },
               child: const Text('Save'),
             ),
           ],
@@ -122,10 +181,10 @@ class _ShoppingListScreenState extends ConsumerState<ShoppingListScreen> {
       },
     );
 
-    if (result != null && result.trim().isNotEmpty && result != currentName) {
+    if (result != null && result!.trim().isNotEmpty && result != currentName) {
       try {
         final firebaseService = ref.read(firebaseServiceProvider);
-        await firebaseService.updateShoppingItem(itemId, result.trim());
+        await firebaseService.updateShoppingItem(itemId, result!.trim());
       } catch (e) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -134,8 +193,50 @@ class _ShoppingListScreenState extends ConsumerState<ShoppingListScreen> {
         }
       }
     }
+  }
 
-    controller.dispose();
+  List<ShoppingItem> _sortItems(List<ShoppingItem> items) {
+    final sortedItems = List<ShoppingItem>.from(items);
+
+    switch (_currentFilter) {
+      case SortFilter.dateTime:
+        sortedItems.sort((a, b) => a.createdAt.compareTo(b.createdAt));
+        break;
+      case SortFilter.alphabetical:
+        sortedItems.sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
+        break;
+      case SortFilter.notDoneFirst:
+        sortedItems.sort((a, b) {
+          if (a.isDone == b.isDone) {
+            return a.createdAt.compareTo(b.createdAt);
+          }
+          return a.isDone ? 1 : -1;
+        });
+        break;
+      case SortFilter.doneFirst:
+        sortedItems.sort((a, b) {
+          if (a.isDone == b.isDone) {
+            return a.createdAt.compareTo(b.createdAt);
+          }
+          return a.isDone ? -1 : 1;
+        });
+        break;
+    }
+
+    return sortedItems;
+  }
+
+  String _getFilterName(SortFilter filter) {
+    switch (filter) {
+      case SortFilter.dateTime:
+        return 'Date & Time';
+      case SortFilter.alphabetical:
+        return 'A-Z';
+      case SortFilter.notDoneFirst:
+        return 'Not Done First';
+      case SortFilter.doneFirst:
+        return 'Done First';
+    }
   }
 
   @override
@@ -168,6 +269,121 @@ class _ShoppingListScreenState extends ConsumerState<ShoppingListScreen> {
         ),
         foregroundColor: Colors.white,
         actions: [
+          PopupMenuButton<SortFilter>(
+            icon: const Icon(Icons.filter_list, color: Colors.white),
+            tooltip: 'Sort by: ${_getFilterName(_currentFilter)}',
+            onSelected: (filter) {
+              setState(() {
+                _currentFilter = filter;
+              });
+            },
+            itemBuilder: (context) => [
+              PopupMenuItem(
+                value: SortFilter.dateTime,
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.access_time,
+                      size: 20,
+                      color: _currentFilter == SortFilter.dateTime
+                          ? const Color(0xFF667eea)
+                          : Colors.grey,
+                    ),
+                    const SizedBox(width: 12),
+                    Text(
+                      'Date & Time',
+                      style: TextStyle(
+                        color: _currentFilter == SortFilter.dateTime
+                            ? const Color(0xFF667eea)
+                            : Colors.black,
+                        fontWeight: _currentFilter == SortFilter.dateTime
+                            ? FontWeight.bold
+                            : FontWeight.normal,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              PopupMenuItem(
+                value: SortFilter.alphabetical,
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.sort_by_alpha,
+                      size: 20,
+                      color: _currentFilter == SortFilter.alphabetical
+                          ? const Color(0xFF667eea)
+                          : Colors.grey,
+                    ),
+                    const SizedBox(width: 12),
+                    Text(
+                      'A-Z',
+                      style: TextStyle(
+                        color: _currentFilter == SortFilter.alphabetical
+                            ? const Color(0xFF667eea)
+                            : Colors.black,
+                        fontWeight: _currentFilter == SortFilter.alphabetical
+                            ? FontWeight.bold
+                            : FontWeight.normal,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              PopupMenuItem(
+                value: SortFilter.notDoneFirst,
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.radio_button_unchecked,
+                      size: 20,
+                      color: _currentFilter == SortFilter.notDoneFirst
+                          ? const Color(0xFF667eea)
+                          : Colors.grey,
+                    ),
+                    const SizedBox(width: 12),
+                    Text(
+                      'Not Done First',
+                      style: TextStyle(
+                        color: _currentFilter == SortFilter.notDoneFirst
+                            ? const Color(0xFF667eea)
+                            : Colors.black,
+                        fontWeight: _currentFilter == SortFilter.notDoneFirst
+                            ? FontWeight.bold
+                            : FontWeight.normal,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              PopupMenuItem(
+                value: SortFilter.doneFirst,
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.check_circle,
+                      size: 20,
+                      color: _currentFilter == SortFilter.doneFirst
+                          ? const Color(0xFF667eea)
+                          : Colors.grey,
+                    ),
+                    const SizedBox(width: 12),
+                    Text(
+                      'Done First',
+                      style: TextStyle(
+                        color: _currentFilter == SortFilter.doneFirst
+                            ? const Color(0xFF667eea)
+                            : Colors.black,
+                        fontWeight: _currentFilter == SortFilter.doneFirst
+                            ? FontWeight.bold
+                            : FontWeight.normal,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Center(
@@ -191,8 +407,22 @@ class _ShoppingListScreenState extends ConsumerState<ShoppingListScreen> {
       ),
       body: shoppingItemsAsync.when(
         data: (items) {
-          if (items.isEmpty) {
-            return Center(
+          // Apply sorting based on current filter
+          final sortedItems = _sortItems(items);
+
+          if (sortedItems.isEmpty) {
+            return RefreshIndicator(
+              onRefresh: () async {
+                // Trigger cleanup and force refresh
+                await ref.read(firebaseServiceProvider).cleanupOldCompletedItems();
+                // Force provider to refresh
+                ref.invalidate(shoppingItemsProvider);
+              },
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                child: SizedBox(
+                  height: MediaQuery.of(context).size.height - 200,
+                  child: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -219,17 +449,59 @@ class _ShoppingListScreenState extends ConsumerState<ShoppingListScreen> {
                   ),
                 ],
               ),
+                  ),
+                ),
+              ),
             );
           }
 
-          return ListView.builder(
+          return RefreshIndicator(
+            onRefresh: () async {
+              // Trigger cleanup and force refresh
+              await ref.read(firebaseServiceProvider).cleanupOldCompletedItems();
+              // Force provider to refresh
+              ref.invalidate(shoppingItemsProvider);
+            },
+            child: ListView.builder(
             padding: const EdgeInsets.all(12),
-            itemCount: items.length,
+            itemCount: sortedItems.length,
             itemBuilder: (context, index) {
-              final item = items[index];
+              final item = sortedItems[index];
               final timeAgo = timeago.format(item.createdAt);
 
-              return Container(
+              return Dismissible(
+                key: Key(item.id),
+                direction: DismissDirection.endToStart,
+                confirmDismiss: (direction) async {
+                  return await _confirmDelete(item.name);
+                },
+                onDismissed: (direction) async {
+                  await _deleteItem(item.id, item.name);
+                },
+                background: Container(
+                  margin: const EdgeInsets.only(bottom: 12),
+                  decoration: BoxDecoration(
+                    color: Colors.red,
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  alignment: Alignment.centerRight,
+                  padding: const EdgeInsets.only(right: 24),
+                  child: const Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.delete_forever, color: Colors.white, size: 32),
+                      SizedBox(height: 4),
+                      Text(
+                        'Delete',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                child: Container(
                 margin: const EdgeInsets.only(bottom: 12),
                 decoration: BoxDecoration(
                   gradient: item.isDone
@@ -278,39 +550,47 @@ class _ShoppingListScreenState extends ConsumerState<ShoppingListScreen> {
                       fontSize: 16,
                     ),
                   ),
-                  subtitle: Row(
-                    children: [
-                      Icon(
-                        Icons.person_outline,
-                        size: 14,
-                        color: Colors.grey[600],
-                      ),
-                      const SizedBox(width: 4),
-                      Flexible(
-                        child: Text(
-                          item.addedBy,
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.grey[600],
-                          ),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Icon(
-                        Icons.access_time,
-                        size: 14,
-                        color: Colors.grey[600],
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        timeAgo,
-                        style: TextStyle(
-                          fontSize: 12,
+                  subtitle: Padding(
+                    padding: const EdgeInsets.only(top: 4),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.person_outline,
+                          size: 12,
                           color: Colors.grey[600],
                         ),
-                      ),
-                    ],
+                        const SizedBox(width: 4),
+                        Flexible(
+                          child: Text(
+                            item.addedBy,
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: Colors.grey[600],
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                          ),
+                        ),
+                        const SizedBox(width: 6),
+                        Icon(
+                          Icons.access_time,
+                          size: 12,
+                          color: Colors.grey[600],
+                        ),
+                        const SizedBox(width: 4),
+                        Flexible(
+                          child: Text(
+                            timeAgo,
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: Colors.grey[600],
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,
@@ -352,7 +632,7 @@ class _ShoppingListScreenState extends ConsumerState<ShoppingListScreen> {
                           if (value == 'edit') {
                             _editItem(item.id, item.name);
                           } else if (value == 'delete') {
-                            _deleteItem(item.id);
+                            _deleteItem(item.id, item.name);
                           }
                         },
                         itemBuilder: (context) => [
@@ -381,8 +661,10 @@ class _ShoppingListScreenState extends ConsumerState<ShoppingListScreen> {
                     ],
                   ),
                 ),
+                ),
               );
             },
+            ),
           );
         },
         loading: () => const Center(
