@@ -51,7 +51,7 @@ class _ShoppingListScreenState extends ConsumerState<ShoppingListScreen> {
           child: Container(
             decoration: const BoxDecoration(
               gradient: LinearGradient(
-                colors: [Color(0xFF667eea), Color(0xFF764ba2)],
+                colors: [Color(0xFFFF9066), Color(0xFFFF6B35)],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
@@ -81,7 +81,7 @@ class _ShoppingListScreenState extends ConsumerState<ShoppingListScreen> {
                     // Title
                     const Text(
                       'Add Shopping Item',
-                      style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Color(0xFF667eea)),
+                      style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Color(0xFFFF6B35)),
                     ),
                     const SizedBox(height: 8),
                     Text('What do you need to buy?', style: TextStyle(fontSize: 14, color: Colors.grey[600])),
@@ -92,7 +92,7 @@ class _ShoppingListScreenState extends ConsumerState<ShoppingListScreen> {
                       autofocus: true,
                       decoration: InputDecoration(
                         hintText: 'e.g., Milk, Bread, Eggs...',
-                        prefixIcon: const Icon(Icons.shopping_cart_outlined, color: Color(0xFF667eea)),
+                        prefixIcon: const Icon(Icons.shopping_cart_outlined, color: Color(0xFFFF6B35)),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(16),
                           borderSide: BorderSide(color: Colors.grey[300]!),
@@ -103,7 +103,7 @@ class _ShoppingListScreenState extends ConsumerState<ShoppingListScreen> {
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(16),
-                          borderSide: const BorderSide(color: Color(0xFF667eea), width: 2),
+                          borderSide: const BorderSide(color: Color(0xFFFF6B35), width: 2),
                         ),
                         filled: true,
                         fillColor: Colors.grey[50],
@@ -140,11 +140,11 @@ class _ShoppingListScreenState extends ConsumerState<ShoppingListScreen> {
                           flex: 2,
                           child: Container(
                             decoration: BoxDecoration(
-                              gradient: const LinearGradient(colors: [Color(0xFF667eea), Color(0xFF764ba2)]),
+                              gradient: const LinearGradient(colors: [Color(0xFFFF9066), Color(0xFFFF6B35)]),
                               borderRadius: BorderRadius.circular(12),
                               boxShadow: [
                                 BoxShadow(
-                                  color: const Color(0xFF667eea).withValues(alpha: 0.3),
+                                  color: const Color(0xFFFF6B35).withValues(alpha: 0.3),
                                   blurRadius: 8,
                                   offset: const Offset(0, 4),
                                 ),
@@ -340,7 +340,7 @@ class _ShoppingListScreenState extends ConsumerState<ShoppingListScreen> {
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              colors: [Color(0xFF667eea), Color(0xFF764ba2)],
+              colors: [Color(0xFFFF9066), Color(0xFFFF6B35)],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
@@ -364,13 +364,13 @@ class _ShoppingListScreenState extends ConsumerState<ShoppingListScreen> {
                     Icon(
                       Icons.access_time,
                       size: 20,
-                      color: _currentFilter == SortFilter.dateTime ? const Color(0xFF667eea) : Colors.grey,
+                      color: _currentFilter == SortFilter.dateTime ? const Color(0xFFFF6B35) : Colors.grey,
                     ),
                     const SizedBox(width: 12),
                     Text(
                       'Date & Time',
                       style: TextStyle(
-                        color: _currentFilter == SortFilter.dateTime ? const Color(0xFF667eea) : Colors.black,
+                        color: _currentFilter == SortFilter.dateTime ? const Color(0xFFFF6B35) : Colors.black,
                         fontWeight: _currentFilter == SortFilter.dateTime ? FontWeight.bold : FontWeight.normal,
                       ),
                     ),
@@ -384,13 +384,13 @@ class _ShoppingListScreenState extends ConsumerState<ShoppingListScreen> {
                     Icon(
                       Icons.sort_by_alpha,
                       size: 20,
-                      color: _currentFilter == SortFilter.alphabetical ? const Color(0xFF667eea) : Colors.grey,
+                      color: _currentFilter == SortFilter.alphabetical ? const Color(0xFFFF6B35) : Colors.grey,
                     ),
                     const SizedBox(width: 12),
                     Text(
                       'A-Z',
                       style: TextStyle(
-                        color: _currentFilter == SortFilter.alphabetical ? const Color(0xFF667eea) : Colors.black,
+                        color: _currentFilter == SortFilter.alphabetical ? const Color(0xFFFF6B35) : Colors.black,
                         fontWeight: _currentFilter == SortFilter.alphabetical ? FontWeight.bold : FontWeight.normal,
                       ),
                     ),
@@ -404,13 +404,13 @@ class _ShoppingListScreenState extends ConsumerState<ShoppingListScreen> {
                     Icon(
                       Icons.radio_button_unchecked,
                       size: 20,
-                      color: _currentFilter == SortFilter.notDoneFirst ? const Color(0xFF667eea) : Colors.grey,
+                      color: _currentFilter == SortFilter.notDoneFirst ? const Color(0xFFFF6B35) : Colors.grey,
                     ),
                     const SizedBox(width: 12),
                     Text(
                       'Not Done First',
                       style: TextStyle(
-                        color: _currentFilter == SortFilter.notDoneFirst ? const Color(0xFF667eea) : Colors.black,
+                        color: _currentFilter == SortFilter.notDoneFirst ? const Color(0xFFFF6B35) : Colors.black,
                         fontWeight: _currentFilter == SortFilter.notDoneFirst ? FontWeight.bold : FontWeight.normal,
                       ),
                     ),
@@ -424,13 +424,13 @@ class _ShoppingListScreenState extends ConsumerState<ShoppingListScreen> {
                     Icon(
                       Icons.check_circle,
                       size: 20,
-                      color: _currentFilter == SortFilter.doneFirst ? const Color(0xFF667eea) : Colors.grey,
+                      color: _currentFilter == SortFilter.doneFirst ? const Color(0xFFFF6B35) : Colors.grey,
                     ),
                     const SizedBox(width: 12),
                     Text(
                       'Done First',
                       style: TextStyle(
-                        color: _currentFilter == SortFilter.doneFirst ? const Color(0xFF667eea) : Colors.black,
+                        color: _currentFilter == SortFilter.doneFirst ? const Color(0xFFFF6B35) : Colors.black,
                         fontWeight: _currentFilter == SortFilter.doneFirst ? FontWeight.bold : FontWeight.normal,
                       ),
                     ),
@@ -646,11 +646,11 @@ class _ShoppingListScreenState extends ConsumerState<ShoppingListScreen> {
       ),
       floatingActionButton: Container(
         decoration: BoxDecoration(
-          gradient: const LinearGradient(colors: [Color(0xFF667eea), Color(0xFF764ba2)]),
+          gradient: const LinearGradient(colors: [Color(0xFFFF9066), Color(0xFFFF6B35)]),
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFF667eea).withValues(alpha: 0.4),
+              color: const Color(0xFFFF6B35).withValues(alpha: 0.4),
               blurRadius: 12,
               offset: const Offset(0, 4),
             ),

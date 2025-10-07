@@ -70,7 +70,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                 const Icon(
                   Icons.shopping_cart,
                   size: 80,
-                  color: Colors.deepPurple,
+                  color: Color(0xFFFF6B35),
                 ),
                 const SizedBox(height: 24),
                 const Text(
@@ -136,7 +136,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                   onPressed: _isLoading ? null : _signIn,
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 16),
-                    backgroundColor: Colors.deepPurple,
+                    backgroundColor: const Color(0xFFFF6B35),
                     foregroundColor: Colors.white,
                   ),
                   child: _isLoading

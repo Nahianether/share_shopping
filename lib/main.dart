@@ -32,7 +32,7 @@ class MyApp extends ConsumerWidget {
       title: 'Shared Shopping List',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFFFF6B35)),
         useMaterial3: true,
       ),
       home: userAsync.when(
