@@ -1,11 +1,26 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:hive/hive.dart';
 
+part 'shopping_item.g.dart';
+
+@HiveType(typeId: 0)
 class ShoppingItem {
+  @HiveField(0)
   final String id;
+
+  @HiveField(1)
   final String name;
+
+  @HiveField(2)
   final bool isDone;
+
+  @HiveField(3)
   final String addedBy;
+
+  @HiveField(4)
   final DateTime createdAt;
+
+  @HiveField(5)
   final DateTime? completedAt;
 
   ShoppingItem({

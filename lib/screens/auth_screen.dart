@@ -57,7 +57,10 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final appTheme = ref.watch(themeProvider);
+
     return Scaffold(
+      backgroundColor: appTheme.backgroundColor,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(24.0),
@@ -67,27 +70,28 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const Icon(
+                Icon(
                   Icons.shopping_cart,
                   size: 80,
-                  color: Color(0xFFFF6B35),
+                  color: appTheme.primaryColor,
                 ),
                 const SizedBox(height: 24),
-                const Text(
+                Text(
                   'Shared Shopping List',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 28,
                     fontWeight: FontWeight.bold,
+                    color: appTheme.textColor,
                   ),
                 ),
                 const SizedBox(height: 8),
-                const Text(
+                Text(
                   'Shop together with your partner',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 16,
-                    color: Colors.grey,
+                    color: appTheme.textSecondaryColor,
                   ),
                 ),
                 const SizedBox(height: 48),
@@ -136,7 +140,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                   onPressed: _isLoading ? null : _signIn,
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 16),
-                    backgroundColor: const Color(0xFFFF6B35),
+                    backgroundColor: appTheme.primaryColor,
                     foregroundColor: Colors.white,
                   ),
                   child: _isLoading

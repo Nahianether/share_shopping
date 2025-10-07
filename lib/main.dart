@@ -6,12 +6,17 @@ import 'firebase_options.dart';
 import 'providers/firebase_providers.dart';
 import 'screens/auth_screen.dart';
 import 'screens/shopping_list_screen.dart';
+import 'services/hive_database_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Load environment variables
   await dotenv.load(fileName: ".env");
+
+  // Initialize Hive
+  final hiveService = HiveDatabaseService();
+  await hiveService.init();
 
   // Initialize Firebase
   await Firebase.initializeApp(
@@ -27,14 +32,13 @@ class MyApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final userAsync = ref.watch(currentUserProvider);
+    final appTheme = ref.watch(themeProvider);
 
     return MaterialApp(
       title: 'Shared Shopping List',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFFFF6B35)),
-        useMaterial3: true,
-      ),
+      theme: appTheme.themeData,
+      themeMode: appTheme.isDark ? ThemeMode.dark : ThemeMode.light,
       home: userAsync.when(
         data: (user) {
           if (user != null) {
